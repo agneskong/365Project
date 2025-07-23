@@ -3,9 +3,30 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/PopcornPicks/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/PopcornPicks/src/main" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/PopcornPicks/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/PopcornPicks/src/main/resources" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/PopcornPicks/src/main/resources/archetype-resources/src" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" exported="" scope="RUNTIME">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/mysql-connector-j-9.4.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+  <component name="PyNamespacePackagesService">
+    <option name="namespacePackageFolders">
+      <list>
+        <option value="$MODULE_DIR$/PopcornPicks/src/main/resources" />
+      </list>
+    </option>
   </component>
 </module>

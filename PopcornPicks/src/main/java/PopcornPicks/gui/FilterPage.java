@@ -27,7 +27,7 @@ public class FilterPage extends JFrame {
 
     public FilterPage() {
         setTitle("Filters");
-        setSize(600, 500);
+        setSize(900, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));

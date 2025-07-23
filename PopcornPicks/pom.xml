@@ -2,8 +2,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
 
+  <modelVersion>4.0.0</modelVersion>
   <groupId>com.example</groupId>
   <artifactId>swingdemo</artifactId>
   <version>1.0-SNAPSHOT</version>
@@ -13,9 +13,28 @@
     <maven.compiler.target>17</maven.compiler.target>
   </properties>
 
+  <dependencies>
+    <!-- JUnit for tests -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Optional: Add MySQL connector if needed -->
+    <!--
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.33</version>
+    </dependency>
+    -->
+  </dependencies>
+
   <build>
     <plugins>
-      <!-- Optional: Ensures Java 17 compatibility -->
+      <!-- Ensures Java 17 compatibility -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -27,5 +46,5 @@
       </plugin>
     </plugins>
   </build>
-</project>
 
+</project>
