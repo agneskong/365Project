@@ -7,7 +7,7 @@ public class StartWindow extends JFrame {
 
     public StartWindow() {
         setTitle("Popcorn Picks");
-        setSize(900, 700);
+        setSize(1200, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -81,8 +81,14 @@ public class StartWindow extends JFrame {
             new FilterPage();
         });
 
+        JPanel playlistPanel = createImageButtonPanel("playlist.png", "Playlist", () -> {
+            dispose();
+            new FilterPage();
+        });
+
         centerPanel.add(moviePanel);
         centerPanel.add(tvPanel);
+        centerPanel.add(playlistPanel);
 
         add(centerPanel, BorderLayout.CENTER);
 
