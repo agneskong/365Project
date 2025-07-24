@@ -58,7 +58,7 @@ public class MovieGridPage extends JFrame {
         gridPanel.setPreferredSize(new Dimension(860, rows * 300));
 
         JScrollPane scrollPane = new JScrollPane(gridPanel,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.VERTICAL_SCROLLBAR_NEVER,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setBorder(null);
