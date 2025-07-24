@@ -1,8 +1,11 @@
 package PopcornPicks.gui;
 
+import PopcornPicks.gui.StartWindow;
+
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
+import java.sql.*;
 
 public class Login extends JFrame {
 
@@ -17,25 +20,19 @@ public class Login extends JFrame {
         getContentPane().setBackground(darkBG);
         setLayout(new BorderLayout());
 
-        // ---------- MAIN WRAPPER PANEL ----------
         JPanel wrapper = new JPanel();
         wrapper.setBackground(darkBG);
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
-
-        // Add vertical glue above content to center vertically
         wrapper.add(Box.createVerticalGlue());
 
-        // ---------- HEADER SECTION ----------
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(darkBG);
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
         headerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Title row (text + popcorn image)
         JPanel titleRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         titleRow.setBackground(darkBG);
 
-        // Title stack
         JPanel titleBox = new JPanel();
         titleBox.setLayout(new BoxLayout(titleBox, BoxLayout.Y_AXIS));
         titleBox.setBackground(darkBG);
@@ -52,7 +49,6 @@ public class Login extends JFrame {
         titleBox.add(popcornLabel);
         titleBox.add(picksLabel);
 
-        // Popcorn image (non-clickable)
         JLabel logoLabel = new JLabel();
         URL iconURL = getClass().getResource("/images/popcorn.png");
         if (iconURL != null) {
@@ -60,13 +56,12 @@ public class Login extends JFrame {
             Image scaled = icon.getImage().getScaledInstance(130, 150, Image.SCALE_SMOOTH);
             logoLabel.setIcon(new ImageIcon(scaled));
         } else {
-            System.err.println("⚠️ Could not load popcorn.png from /images");
+            System.err.println("Could not load popcorn.png from /images");
         }
 
         titleRow.add(titleBox);
         titleRow.add(logoLabel);
 
-        // Tagline
         JLabel tagline = new JLabel("Sign in to discover what to watch next");
         tagline.setFont(new Font("SansSerif", Font.ITALIC, 24));
         tagline.setForeground(Color.LIGHT_GRAY);
@@ -77,7 +72,6 @@ public class Login extends JFrame {
         headerPanel.add(tagline);
         headerPanel.add(Box.createVerticalStrut(30));
 
-        // ---------- LOGIN FORM ----------
         JPanel formPanel = new JPanel();
         formPanel.setBackground(darkBG);
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
@@ -106,11 +100,11 @@ public class Login extends JFrame {
             String user = usernameField.getText();
             String pass = new String(passwordField.getPassword());
 
-            if (user.equals("user") && pass.equals("pass")) {
+            if (checkCredentials(user, pass)) {
                 dispose();
                 new StartWindow();
             } else {
-                JOptionPane.showMessageDialog(this, "Invalid login. Try 'user' and 'pass'.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid login.", "Login Failed", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -120,13 +114,32 @@ public class Login extends JFrame {
         formPanel.add(Box.createVerticalStrut(25));
         formPanel.add(loginButton);
 
-        // Add everything to wrapper
         wrapper.add(headerPanel);
         wrapper.add(formPanel);
-        wrapper.add(Box.createVerticalGlue()); // glue below for vertical centering
-
+        wrapper.add(Box.createVerticalGlue());
         add(wrapper, BorderLayout.CENTER);
         setVisible(true);
+    }
+
+    private boolean checkCredentials(String username, String password) {
+        String url = "jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/?user=team2";
+        String dbUser = "team2";
+        String dbPass = "team2password";
+
+        try (Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Users WHERE username=? AND password=?")) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Database error", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
     }
 
     public static void main(String[] args) {
