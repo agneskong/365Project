@@ -8,7 +8,7 @@ import java.sql.*;
 public class SignUp extends JFrame {
     public SignUp() {
         setTitle("Popcorn Picks Sign In");
-        setSize(900, 700);
+        setSize(1100, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);

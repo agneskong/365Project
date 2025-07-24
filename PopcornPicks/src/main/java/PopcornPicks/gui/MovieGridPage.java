@@ -4,6 +4,7 @@ import PopcornPicks.model.Movie;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ public class MovieGridPage extends JFrame {
 
     public MovieGridPage() {
         setTitle("Movie Results");
-        setSize(900, 700);
+        setSize(1100, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         getContentPane().setBackground(new Color(20, 20, 20));
@@ -45,7 +46,7 @@ public class MovieGridPage extends JFrame {
         add(headerPanel, BorderLayout.NORTH);
 
         // ---------- GRID PANEL ----------
-        JPanel gridPanel = new JPanel(new GridLayout(0, 4, 20, 20));
+        JPanel gridPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
         gridPanel.setBackground(new Color(20, 20, 20));
         gridPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
@@ -54,11 +55,8 @@ public class MovieGridPage extends JFrame {
             gridPanel.add(createMovieBox(movie));
         }
 
-        int rows = (int) Math.ceil(movies.size() / 4.0);
-        gridPanel.setPreferredSize(new Dimension(860, rows * 300));
-
         JScrollPane scrollPane = new JScrollPane(gridPanel,
-                JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setBorder(null);
@@ -67,7 +65,7 @@ public class MovieGridPage extends JFrame {
         setVisible(true);
     }
 
-    private JLabel createPopcornIcon() {
+        private JLabel createPopcornIcon() {
         URL url = getClass().getResource("/images/popcorn.png");
         if (url != null) {
             ImageIcon icon = new ImageIcon(url);
@@ -81,46 +79,30 @@ public class MovieGridPage extends JFrame {
 
     private JPanel createMovieBox(Movie movie) {
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setPreferredSize(new Dimension(140, 220)); // Fixed size!
         panel.setBackground(new Color(30, 30, 30));
         panel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        panel.setPreferredSize(new Dimension(180, 280));
-        panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        ImageIcon iconNormal = null;
-        ImageIcon iconHover = null;
-
+        ImageIcon posterIcon;
         try {
             ImageIcon raw = new ImageIcon(movie.getPosterPath());
-            Image image = raw.getImage();
-            iconNormal = new ImageIcon(image.getScaledInstance(160, 240, Image.SCALE_SMOOTH));
-            iconHover = new ImageIcon(image.getScaledInstance(200, 280, Image.SCALE_SMOOTH));
+            Image scaled = raw.getImage().getScaledInstance(120, 180, Image.SCALE_SMOOTH);
+            posterIcon = new ImageIcon(scaled);
         } catch (Exception e) {
-            System.err.println("Could not load image: " + movie.getPosterPath());
+            posterIcon = new ImageIcon(new BufferedImage(120, 180, BufferedImage.TYPE_INT_RGB));
         }
 
-        JLabel imageLabel = new JLabel(iconNormal);
+        JLabel imageLabel = new JLabel(posterIcon);
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(imageLabel, BorderLayout.CENTER);
 
-        JLabel titleLabel = new JLabel(movie.getTitle(), SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("<html><center>" + movie.getTitle() + "</center></html>", SwingConstants.CENTER);
         titleLabel.setForeground(Color.WHITE);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(8, 4, 8, 4));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(6, 4, 6, 4));
         panel.add(titleLabel, BorderLayout.SOUTH);
 
-        ImageIcon finalIconNormal = iconNormal;
-        ImageIcon finalIconHover = iconHover;
-
+        panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         panel.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                if (finalIconHover != null) imageLabel.setIcon(finalIconHover);
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                if (finalIconNormal != null) imageLabel.setIcon(finalIconNormal);
-            }
-
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 dispose();
@@ -133,25 +115,44 @@ public class MovieGridPage extends JFrame {
 
     private List<Movie> getMoviesFromDB() {
         List<Movie> movies = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/team2" +
-                "", "team2", "team2password");
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT title, genre, year, rating, synopsis, posterPath FROM Movies")) {
 
-            while (rs.next()) {
-                String title = rs.getString("title");
-                String genre = rs.getString("genre");
-                int year = rs.getInt("year");
-                float rating = rs.getFloat("rating");
-                String synopsis = rs.getString("synopsis");
-                String posterPath = rs.getString("posterPath");
+        // DUMMY MOVIES FOR FILLER
+        movies.add(new Movie("Interstellar", "Sci-Fi", 2014, 8.6f,
+                "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+                "images/interstellar.jpg"));
+        movies.add(new Movie("The Dark Knight", "Action", 2008, 9.0f,
+                "Batman faces the Joker, a criminal mastermind bent on chaos in Gotham.",
+                "images/dark_knight.jpg"));
+        movies.add(new Movie("Spirited Away", "Animation", 2001, 8.6f,
+                "A young girl enters a mysterious world of spirits and must find a way to rescue her parents.",
+                "images/spirited_away.jpg"));
+        movies.add(new Movie("Parasite", "Thriller", 2019, 8.6f,
+                "A poor family schemes to become employed by a wealthy household by posing as unrelated professionals.",
+                "images/parasite.jpg"));
 
-                movies.add(new Movie(title, genre, year, rating, synopsis, posterPath));
-            }
+        // Uncomment to test DB connection later
+    /*
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/team2",
+            "team2", "team2password");
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery("SELECT title, genre, year, rating, synopsis, posterPath FROM Movies")) {
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        while (rs.next()) {
+            String title = rs.getString("title");
+            String genre = rs.getString("genre");
+            int year = rs.getInt("year");
+            float rating = rs.getFloat("rating");
+            String synopsis = rs.getString("synopsis");
+            String posterPath = rs.getString("posterPath");
+
+            movies.add(new Movie(title, genre, year, rating, synopsis, posterPath));
         }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    */
+
         return movies;
     }
 

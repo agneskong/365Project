@@ -8,13 +8,13 @@ public class Movie {
     private String posterPath;
     private String synopsis;
 
-    public Movie(String title, String genre, int year, float rating, String posterPath, String synopsis) {
+    public Movie(String title, String genre, int year, float rating, String synopsis, String posterPath) {
         this.title = title;
         this.genre = genre;
         this.year = year;
         this.rating = rating;
-        this.posterPath = posterPath;
         this.synopsis = synopsis;
+        this.posterPath = posterPath;
     }
 
     public String getTitle() { return title; }

@@ -7,7 +7,7 @@ public class StartWindow extends JFrame {
 
     public StartWindow() {
         setTitle("Popcorn Picks");
-        setSize(1200, 700);
+        setSize(1100, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 

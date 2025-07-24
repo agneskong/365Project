@@ -10,7 +10,7 @@ public class PosterDetailPage extends JFrame {
 
     public PosterDetailPage(Movie movie) {
         setTitle("Movie Details");
-        setSize(900, 700);
+        setSize(1100, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         getContentPane().setBackground(new Color(20, 20, 20));
@@ -74,6 +74,7 @@ public class PosterDetailPage extends JFrame {
         }
 
         JPanel posterWrapper = new JPanel(new BorderLayout());
+        posterWrapper.setPreferredSize(new Dimension(300, 420));
         posterWrapper.setBackground(new Color(20, 20, 20));
         posterWrapper.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.GRAY, 2),
@@ -107,9 +108,8 @@ public class PosterDetailPage extends JFrame {
         synopsisArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JScrollPane synopsisScroll = new JScrollPane(synopsisArea);
-        synopsisScroll.setPreferredSize(new Dimension(400, 300));
+        synopsisScroll.setPreferredSize(new Dimension(200, 150));
         synopsisScroll.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        synopsisScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         synopsisScroll.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         detailPanel.add(genreLabel);
@@ -150,8 +150,8 @@ public class PosterDetailPage extends JFrame {
                     "Sci-Fi, Thriller",
                     2010,
                     9.0f,
-                    "images/inception.jpg",
-                    "A skilled thief who steals corporate secrets through dream-sharing technology is given a chance at redemption..."
+                    "A skilled thief who steals corporate secrets through dream-sharing technology is given a chance at redemption...",
+                    "images/inception.jpg"
             );
             new PosterDetailPage(sample);
         });
