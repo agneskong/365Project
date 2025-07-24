@@ -133,7 +133,8 @@ public class MovieGridPage extends JFrame {
 
     private List<Movie> getMoviesFromDB() {
         List<Movie> movies = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/?user=team2", "team2", "team2password");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/team2" +
+                "", "team2", "team2password");
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT title, genre, year, rating, synopsis, posterPath FROM Movies")) {
 

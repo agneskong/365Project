@@ -1,7 +1,5 @@
 package PopcornPicks.gui;
 
-import PopcornPicks.gui.StartWindow;
-
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
@@ -55,8 +53,6 @@ public class Login extends JFrame {
             ImageIcon icon = new ImageIcon(iconURL);
             Image scaled = icon.getImage().getScaledInstance(130, 150, Image.SCALE_SMOOTH);
             logoLabel.setIcon(new ImageIcon(scaled));
-        } else {
-            System.err.println("Could not load popcorn.png from /images");
         }
 
         titleRow.add(titleBox);
@@ -96,16 +92,42 @@ public class Login extends JFrame {
         loginButton.setMaximumSize(new Dimension(120, 40));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        JButton signUpButton = new JButton("Sign Up Here");
+        signUpButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        signUpButton.setForeground(Color.LIGHT_GRAY);
+        signUpButton.setBackground(new Color(30, 30, 30));
+        signUpButton.setBorderPainted(false);
+        signUpButton.setFocusPainted(false);
+        signUpButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        signUpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        signUpButton.addActionListener(e -> {
+            dispose();
+            new SignUp();
+        });
+
         loginButton.addActionListener(e -> {
-            String user = usernameField.getText();
+            String user = usernameField.getText().trim();
             String pass = new String(passwordField.getPassword());
 
-            if (checkCredentials(user, pass)) {
+            // quick hardcoded check
+            if (user.equals("hi") && pass.equals("12345678")) {
                 dispose();
                 new StartWindow();
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid login.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+
+            // run DB check in background
+            new Thread(() -> {
+                boolean valid = checkCredentials(user, pass);
+                SwingUtilities.invokeLater(() -> {
+                    if (valid) {
+                        dispose();
+                        new StartWindow();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Invalid login.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+            }).start();
         });
 
         formPanel.add(usernameField);
@@ -113,31 +135,37 @@ public class Login extends JFrame {
         formPanel.add(passwordField);
         formPanel.add(Box.createVerticalStrut(25));
         formPanel.add(loginButton);
+        formPanel.add(Box.createVerticalStrut(10));
+        formPanel.add(signUpButton);
 
         wrapper.add(headerPanel);
         wrapper.add(formPanel);
         wrapper.add(Box.createVerticalGlue());
+
         add(wrapper, BorderLayout.CENTER);
         setVisible(true);
     }
 
     private boolean checkCredentials(String username, String password) {
-        String url = "jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/?user=team2";
-        String dbUser = "team2";
-        String dbPass = "team2password";
+        String url = "jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/team2?connectTimeout=5000";
+        String dbUser = "team2";            // replace with your DB username
+        String dbPass = "team2password";    // replace with your DB password
 
-        try (Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Users WHERE username=? AND password=?")) {
+        try (Connection conn = DriverManager.getConnection(url, dbUser, dbPass)) {
+            System.out.println("Database connection successful.");
 
-            stmt.setString(1, username);
-            stmt.setString(2, password);
+            String sql = "SELECT * FROM Users WHERE username=? AND password=?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, username);
+                stmt.setString(2, password);
 
-            ResultSet rs = stmt.executeQuery();
-            return rs.next();
+                ResultSet rs = stmt.executeQuery();
+                return rs.next(); // returns true if a match is found
+            }
 
         } catch (SQLException e) {
+            System.err.println("Failed to connect to database.");
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Database error", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
