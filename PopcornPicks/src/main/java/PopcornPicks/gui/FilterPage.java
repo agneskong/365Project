@@ -2,6 +2,8 @@ package PopcornPicks.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -27,88 +29,148 @@ public class FilterPage extends JFrame {
 
     public FilterPage() {
         setTitle("Filters");
-        setSize(900, 700);
+        setSize(800, 1000);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         getContentPane().setBackground(new Color(20, 20, 20));
+        setLayout(new BorderLayout());
+
+        Color darkBG = new Color(20, 20, 20);
+        Color gold = new Color(247, 179, 64);
+        Color panelBG = new Color(28, 28, 28);
+        Color light = Color.decode("#FEE6B6");
+
+        // header
+        JPanel headerPanel = new JPanel();
+        headerPanel.setBackground(darkBG);
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
 
         // title
-        JLabel titleLabel = new JLabel("Filters", JLabel.CENTER);
-        titleLabel.setFont(new Font("Georgia", Font.BOLD, 36));
-        titleLabel.setForeground(new Color(247, 179, 64)); // #F7B340
+        JLabel titleLabel = new JLabel("Filters");
+        titleLabel.setFont(new Font("Georgia", Font.BOLD | Font.ITALIC, 64));
+        titleLabel.setForeground(gold);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        add(Box.createVerticalStrut(20));
-        add(titleLabel);
 
-        // genre filters
-        add(Box.createVerticalStrut(20));
-        JLabel genreLabel = new JLabel("filters");
-        styleLabel(genreLabel);
-        add(genreLabel);
+        // logo
+        JLabel logoLabel = null;
 
-        JPanel genrePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
-        genrePanel.setBackground(new Color(20, 20, 20));
+        ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/popcorn.png"));
+        Image logoImg = logoIcon.getImage().getScaledInstance(60, 70, Image.SCALE_SMOOTH);
+        logoLabel = new JLabel(new ImageIcon(logoImg));
+        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        headerPanel.add(Box.createVerticalStrut(20));
+        if (logoLabel != null) headerPanel.add(logoLabel);
+        headerPanel.add(titleLabel);
+        headerPanel.add(Box.createVerticalStrut(10));
+
+        add(headerPanel, BorderLayout.NORTH);
+
+        // main content panel
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(darkBG);
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60)); // top, left, bottom, right
+
+        // genre section
+        RoundedPanel genrePanel = new RoundedPanel(30, panelBG);
+        genrePanel.setLayout(new BoxLayout(genrePanel, BoxLayout.Y_AXIS));
+        genrePanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+
+        JLabel genreLabel = new JLabel("Genre");
+        styleSectionLabel(genreLabel, light);
+        genrePanel.add(genreLabel);
+        genrePanel.add(Box.createVerticalStrut(10));
+
+        JPanel genreBoxes = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+        genreBoxes.setBackground(panelBG);
         for (JCheckBox box : new JCheckBox[]{actionBox, comedyBox, dramaBox, fantasyBox, horrorBox, romanceBox,
                 scifiBox, thrillerBox}) {
             box.setForeground(Color.WHITE);
             box.setOpaque(false);
-            genrePanel.add(makeCheckboxBox(box));
+            box.setFont(new Font("SansSerif", Font.PLAIN, 24));
+            genreBoxes.add(makeCheckboxBox(box));
         }
-        add(genrePanel);
+        genrePanel.add(genreBoxes);
+        mainPanel.add(genrePanel);
+        mainPanel.add(Box.createVerticalStrut(20));
 
-        // year range
-        add(Box.createVerticalStrut(10));
-        JLabel yearLabel = new JLabel("year");
-        styleLabel(yearLabel);
-        add(yearLabel);
+        // year section
+        RoundedPanel yearPanel = new RoundedPanel(30, panelBG);
+        yearPanel.setLayout(new BoxLayout(yearPanel, BoxLayout.Y_AXIS));
+        yearPanel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
 
-        JPanel yearPanel = new JPanel();
-        yearPanel.setBackground(new Color(20, 20, 20));
-        yearPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        yearPanel.add(yearFromField);
-        JLabel to = new JLabel("to");
-        to.setForeground(Color.WHITE);
-        yearPanel.add(to);
-        yearPanel.add(yearToField);
+        JLabel yearLabel = new JLabel("Year");
+        styleSectionLabel(yearLabel, light);
+        yearPanel.add(yearLabel);
+        yearPanel.add(Box.createVerticalStrut(7));
+
+        JPanel yearFields = new JPanel();
+        yearFields.setBackground(panelBG);
+        yearFields.setLayout(new FlowLayout(FlowLayout.CENTER));
         styleTextField(yearFromField);
         styleTextField(yearToField);
-        add(yearPanel);
+        yearFields.add(yearFromField);
+        JLabel to = new JLabel("to");
+        to.setForeground(Color.WHITE);
+        yearFields.add(to);
+        yearFields.add(yearToField);
+        yearPanel.add(yearFields);
+        mainPanel.add(yearPanel);
+        mainPanel.add(Box.createVerticalStrut(20));
 
-        // rating slider
-        add(Box.createVerticalStrut(10));
-        JLabel ratingLabel = new JLabel("rating");
-        styleLabel(ratingLabel);
-        add(ratingLabel);
+        // rating section
+        RoundedPanel ratingPanel = new RoundedPanel(30, panelBG);
+        ratingPanel.setLayout(new BoxLayout(ratingPanel, BoxLayout.Y_AXIS));
+        ratingPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
+        JLabel ratingLabel = new JLabel("Rating");
+        styleSectionLabel(ratingLabel, light);
+        ratingPanel.add(ratingLabel);
+        ratingPanel.add(Box.createVerticalStrut(10));
 
         ratingSlider.setLabelTable(makeStarLabels());
         ratingSlider.setPaintLabels(true);
         ratingSlider.setPaintTicks(true);
         ratingSlider.setMajorTickSpacing(1);
-        ratingSlider.setForeground(Color.WHITE);
-        ratingSlider.setBackground(new Color(20, 20, 20));
-        add(ratingSlider);
+        ratingSlider.setForeground(gold);
+        ratingSlider.setBackground(panelBG);
+        ratingPanel.add(ratingSlider);
+        mainPanel.add(ratingPanel);
+        mainPanel.add(Box.createVerticalStrut(30));
 
         // continue button
         JButton continueButton = new JButton("Continue");
         continueButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        continueButton.setFont(new Font("SansSerif", Font.BOLD, 16));
-        continueButton.setBackground(new Color(40, 40, 40));
-        continueButton.setForeground(Color.WHITE);
+        continueButton.setFont(new Font("SansSerif", Font.BOLD, 18));
+        continueButton.setBackground(gold);
+        continueButton.setForeground(Color.white);
         continueButton.setFocusPainted(false);
-        continueButton.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
-        add(Box.createVerticalStrut(20));
-        add(continueButton);
+        continueButton.setBorder(BorderFactory.createEmptyBorder(12, 40, 12, 40));
+        continueButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Hover effect
+        continueButton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                continueButton.setBackground(new Color(255, 239, 184));
+            }
+            public void mouseExited(MouseEvent e) {
+                continueButton.setBackground(gold);
+            }
+        });
+        // Remove from mainPanel and add to BorderLayout.SOUTH
+        mainPanel.add(continueButton);
+        mainPanel.add(Box.createVerticalStrut(20));
+
+        add(mainPanel, BorderLayout.CENTER);
+        // add(continueButton, BorderLayout.SOUTH);
 
         continueButton.addActionListener(e -> {
-            // Example: Print filters or navigate to grid page
             System.out.println("Selected Genres: " + getSelectedGenres());
             System.out.println("Year: " + yearFromField.getText() + " to " + yearToField.getText());
             System.out.println("Min Rating: " + ratingSlider.getValue());
-
             dispose();
-            new MovieGridPage(); // ← Replace with your next page
+            new MovieGridPage();
         });
 
         setVisible(true);
@@ -121,11 +183,17 @@ public class FilterPage extends JFrame {
     }
 
     private void styleTextField(JTextField field) {
-        field.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        field.setFont(new Font("SansSerif", Font.PLAIN, 24));
         field.setBackground(new Color(30, 30, 30));
         field.setForeground(Color.WHITE);
         field.setCaretColor(Color.WHITE);
-        field.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        field.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2, true));
+    }
+
+    private void styleSectionLabel(JLabel label, Color gold) {
+        label.setForeground(gold);
+        label.setFont(new Font("SansSerif", Font.BOLD, 26));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
     }
 
     public List<String> getSelectedGenres() {
