@@ -13,7 +13,7 @@ public class MovieGridPage extends JFrame {
 
     public MovieGridPage() {
         setTitle("Movie Results");
-        setSize(900, 700);
+        setSize(1100, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         getContentPane().setBackground(new Color(20, 20, 20));
