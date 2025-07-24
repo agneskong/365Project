@@ -146,18 +146,18 @@ public class Login extends JFrame {
         setVisible(true);
     }
 
-    private boolean checkCredentials(String username, String password) {
+    private boolean checkCredentials(String username, String pwd) {
         String url = "jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/team2?connectTimeout=5000";
         String dbUser = "team2";            // replace with your DB username
         String dbPass = "team2password";    // replace with your DB password
 
-        try (Connection conn = DriverManager.getConnection(url, dbUser, dbPass)) {
+        try (Connection connection = DriverManager.getConnection(url, dbUser, dbPass)) {
             System.out.println("Database connection successful.");
 
-            String sql = "SELECT * FROM Users WHERE username=? AND password=?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String sql = "SELECT * FROM Users WHERE username=? AND pwd=?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, username);
-                stmt.setString(2, password);
+                stmt.setString(2, pwd);
 
                 ResultSet rs = stmt.executeQuery();
                 return rs.next(); // returns true if a match is found
