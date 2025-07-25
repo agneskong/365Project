@@ -83,7 +83,7 @@ public class StartWindow extends JFrame {
 
         JPanel playlistPanel = createImageButtonPanel("playlist.png", "Playlist", () -> {
             dispose();
-            new FilterPage();
+            new PlaylistHomePage();
         });
 
         centerPanel.add(moviePanel);
