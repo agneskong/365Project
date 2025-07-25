@@ -1,13 +1,14 @@
 package PopcornPicks.gui;
 
+import PopcornPicks.db.MyJDBC;
+
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
-import java.sql.*;
 
 public class SignUp extends JFrame {
+
     public SignUp() {
-        setTitle("Popcorn Picks Sign In");
+        setTitle("Popcorn Picks Sign Up");
         setSize(1100, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -22,6 +23,7 @@ public class SignUp extends JFrame {
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
         wrapper.add(Box.createVerticalGlue());
 
+        // ---------- HEADER ----------
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(darkBG);
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
@@ -47,14 +49,9 @@ public class SignUp extends JFrame {
         titleBox.add(picksLabel);
 
         JLabel logoLabel = new JLabel();
-        URL iconURL = getClass().getResource("/images/popcorn.png");
-        if (iconURL != null) {
-            ImageIcon icon = new ImageIcon(iconURL);
-            Image scaled = icon.getImage().getScaledInstance(130, 150, Image.SCALE_SMOOTH);
-            logoLabel.setIcon(new ImageIcon(scaled));
-        } else {
-            System.err.println("Could not load popcorn.png from /images");
-        }
+        ImageIcon icon = new ImageIcon(getClass().getResource("/images/popcorn.png"));
+        Image scaled = icon.getImage().getScaledInstance(130, 150, Image.SCALE_SMOOTH);
+        logoLabel.setIcon(new ImageIcon(scaled));
 
         titleRow.add(titleBox);
         titleRow.add(logoLabel);
@@ -69,6 +66,7 @@ public class SignUp extends JFrame {
         headerPanel.add(tagline);
         headerPanel.add(Box.createVerticalStrut(30));
 
+        // ---------- FORM ----------
         JPanel formPanel = new JPanel();
         formPanel.setBackground(darkBG);
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
@@ -96,19 +94,20 @@ public class SignUp extends JFrame {
         JButton loginButton = new JButton("Back to Login");
         loginButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
         loginButton.setForeground(Color.LIGHT_GRAY);
-        loginButton.setBackground(new Color(30, 30, 30));  // optional
+        loginButton.setBackground(new Color(30, 30, 30));
         loginButton.setBorderPainted(false);
         loginButton.setFocusPainted(false);
         loginButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginButton.addActionListener(e -> {
-            dispose(); // close the login window
-            new Login(); // open the SignUp window
+            dispose();
+            new Login();
         });
 
         signupButton.addActionListener(e -> {
-            String user = usernameField.getText();
-            String pass = new String(passwordField.getPassword());
+            String user = usernameField.getText().trim();
+            String pass = new String(passwordField.getPassword()).trim();
+
             if (user.isEmpty() || pass.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Username and password cannot be empty.", "Error", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -119,13 +118,13 @@ public class SignUp extends JFrame {
                 return;
             }
 
-            if (isUsernameTaken(user)) {
+            if (MyJDBC.getUserId(user) != -1) {
                 JOptionPane.showMessageDialog(this, "Username already exists. Please choose a different one.", "Duplicate Username", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            if (registerUser(user, pass)) {
-                JOptionPane.showMessageDialog(this, "Sign up successful!");
+            if (MyJDBC.registerUser(user, pass)) {
+                JOptionPane.showMessageDialog(this, "Sign up successful! Please log in.");
                 dispose();
                 new Login();
             } else {
@@ -133,58 +132,20 @@ public class SignUp extends JFrame {
             }
         });
 
-
         formPanel.add(usernameField);
         formPanel.add(Box.createVerticalStrut(15));
         formPanel.add(passwordField);
         formPanel.add(Box.createVerticalStrut(25));
         formPanel.add(signupButton);
-        formPanel.add(Box.createVerticalStrut(10)); // spacing
+        formPanel.add(Box.createVerticalStrut(10));
         formPanel.add(loginButton);
 
         wrapper.add(headerPanel);
         wrapper.add(formPanel);
         wrapper.add(Box.createVerticalGlue());
         add(wrapper, BorderLayout.CENTER);
+
         setVisible(true);
-    }
-
-    private boolean isUsernameTaken(String username) {
-        String url = "jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/team2";
-        String dbUser = "team2";
-        String dbPass = "team2password";
-
-        try (Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Users WHERE username = ?")) {
-
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next(); // true if username exists
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return true; // assume taken if DB error
-        }
-    }
-
-    private boolean registerUser(String username, String password) {
-        String url = "jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/team2";
-        String dbUser = "team2";
-        String dbPass = "team2password";
-
-        try (Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO Users (username, pwd) VALUES (?, ?)")) {
-
-            stmt.setString(1, username);
-            stmt.setString(2, password);
-            int rowsInserted = stmt.executeUpdate();
-            System.out.println("User was successfully registered!");
-            return rowsInserted > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     public static void main(String[] args) {

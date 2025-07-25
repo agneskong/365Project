@@ -5,6 +5,7 @@ import PopcornPicks.model.Movie;
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
+import java.util.List;
 
 public class PosterDetailPage extends JFrame {
 
@@ -134,7 +135,7 @@ public class PosterDetailPage extends JFrame {
         backButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         backButton.addActionListener(e -> {
             dispose();
-            new MovieGridPage();
+            new MovieGridPage(List.of("Action", "Comedy"), 1990, 2025, 5); // dummy
         });
 
         footer.add(backButton);

@@ -2,30 +2,23 @@ package PopcornPicks.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 public class FilterPage extends JFrame {
-
     private final JCheckBox actionBox = new JCheckBox("Action");
     private final JCheckBox comedyBox = new JCheckBox("Comedy");
     private final JCheckBox horrorBox = new JCheckBox("Horror");
     private final JCheckBox romanceBox = new JCheckBox("Romance");
     private final JCheckBox dramaBox = new JCheckBox("Drama");
     private final JCheckBox scifiBox = new JCheckBox("Sci-Fi");
-
     private final JCheckBox fantasyBox = new JCheckBox("Fantasy");
-
     private final JCheckBox thrillerBox = new JCheckBox("Thriller");
 
     private final JTextField yearFromField = new JTextField("1990", 4);
     private final JTextField yearToField = new JTextField("2025", 4);
-
-    private final JSlider ratingSlider = new JSlider(1, 5, 3); // default: 3+
-
+    private final JSlider ratingSlider = new JSlider(1, 10, 5);
 
     public FilterPage() {
         setTitle("Filters");
@@ -40,39 +33,31 @@ public class FilterPage extends JFrame {
         Color panelBG = new Color(28, 28, 28);
         Color light = Color.decode("#FEE6B6");
 
-        // header
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(darkBG);
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
 
-        // title
         JLabel titleLabel = new JLabel("Filters");
         titleLabel.setFont(new Font("Georgia", Font.BOLD | Font.ITALIC, 64));
         titleLabel.setForeground(gold);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // logo
-        JLabel logoLabel = null;
-
         ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/popcorn.png"));
         Image logoImg = logoIcon.getImage().getScaledInstance(60, 70, Image.SCALE_SMOOTH);
-        logoLabel = new JLabel(new ImageIcon(logoImg));
+        JLabel logoLabel = new JLabel(new ImageIcon(logoImg));
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         headerPanel.add(Box.createVerticalStrut(20));
-        if (logoLabel != null) headerPanel.add(logoLabel);
+        headerPanel.add(logoLabel);
         headerPanel.add(titleLabel);
         headerPanel.add(Box.createVerticalStrut(10));
-
         add(headerPanel, BorderLayout.NORTH);
 
-        // main content panel
         JPanel mainPanel = new JPanel();
         mainPanel.setBackground(darkBG);
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60)); // top, left, bottom, right
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
 
-        // genre section
         RoundedPanel genrePanel = new RoundedPanel(30, panelBG);
         genrePanel.setLayout(new BoxLayout(genrePanel, BoxLayout.Y_AXIS));
         genrePanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
@@ -84,8 +69,7 @@ public class FilterPage extends JFrame {
 
         JPanel genreBoxes = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
         genreBoxes.setBackground(panelBG);
-        for (JCheckBox box : new JCheckBox[]{actionBox, comedyBox, dramaBox, fantasyBox, horrorBox, romanceBox,
-                scifiBox, thrillerBox}) {
+        for (JCheckBox box : new JCheckBox[]{actionBox, comedyBox, dramaBox, fantasyBox, horrorBox, romanceBox, scifiBox, thrillerBox}) {
             box.setForeground(Color.WHITE);
             box.setOpaque(false);
             box.setFont(new Font("SansSerif", Font.PLAIN, 24));
@@ -95,7 +79,6 @@ public class FilterPage extends JFrame {
         mainPanel.add(genrePanel);
         mainPanel.add(Box.createVerticalStrut(20));
 
-        // year section
         RoundedPanel yearPanel = new RoundedPanel(30, panelBG);
         yearPanel.setLayout(new BoxLayout(yearPanel, BoxLayout.Y_AXIS));
         yearPanel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
@@ -105,9 +88,8 @@ public class FilterPage extends JFrame {
         yearPanel.add(yearLabel);
         yearPanel.add(Box.createVerticalStrut(7));
 
-        JPanel yearFields = new JPanel();
+        JPanel yearFields = new JPanel(new FlowLayout(FlowLayout.CENTER));
         yearFields.setBackground(panelBG);
-        yearFields.setLayout(new FlowLayout(FlowLayout.CENTER));
         styleTextField(yearFromField);
         styleTextField(yearToField);
         yearFields.add(yearFromField);
@@ -119,7 +101,6 @@ public class FilterPage extends JFrame {
         mainPanel.add(yearPanel);
         mainPanel.add(Box.createVerticalStrut(20));
 
-        // rating section
         RoundedPanel ratingPanel = new RoundedPanel(30, panelBG);
         ratingPanel.setLayout(new BoxLayout(ratingPanel, BoxLayout.Y_AXIS));
         ratingPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
@@ -139,7 +120,6 @@ public class FilterPage extends JFrame {
         mainPanel.add(ratingPanel);
         mainPanel.add(Box.createVerticalStrut(30));
 
-        // continue button
         JButton continueButton = new JButton("Continue");
         continueButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         continueButton.setFont(new Font("SansSerif", Font.BOLD, 18));
@@ -148,38 +128,20 @@ public class FilterPage extends JFrame {
         continueButton.setFocusPainted(false);
         continueButton.setBorder(BorderFactory.createEmptyBorder(12, 40, 12, 40));
         continueButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // Hover effect
-        continueButton.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                continueButton.setBackground(new Color(255, 239, 184));
-            }
-            public void mouseExited(MouseEvent e) {
-                continueButton.setBackground(gold);
-            }
-        });
-        // Remove from mainPanel and add to BorderLayout.SOUTH
         mainPanel.add(continueButton);
         mainPanel.add(Box.createVerticalStrut(20));
 
-        add(mainPanel, BorderLayout.CENTER);
-        // add(continueButton, BorderLayout.SOUTH);
-
         continueButton.addActionListener(e -> {
-            System.out.println("Selected Genres: " + getSelectedGenres());
-            System.out.println("Year: " + yearFromField.getText() + " to " + yearToField.getText());
-            System.out.println("Min Rating: " + ratingSlider.getValue());
+            List<String> genres = getSelectedGenres();
+            int yearFrom = Integer.parseInt(yearFromField.getText());
+            int yearTo = Integer.parseInt(yearToField.getText());
+            int minRating = ratingSlider.getValue();
             dispose();
-            new MovieGridPage();
+            new MovieGridPage(genres, yearFrom, yearTo, minRating);
         });
 
+        add(mainPanel, BorderLayout.CENTER);
         setVisible(true);
-    }
-
-    private void styleLabel(JLabel label) {
-        label.setForeground(Color.LIGHT_GRAY);
-        label.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
 
     private void styleTextField(JTextField field) {
@@ -190,23 +152,10 @@ public class FilterPage extends JFrame {
         field.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2, true));
     }
 
-    private void styleSectionLabel(JLabel label, Color gold) {
-        label.setForeground(gold);
+    private void styleSectionLabel(JLabel label, Color color) {
+        label.setForeground(color);
         label.setFont(new Font("SansSerif", Font.BOLD, 26));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
-    }
-
-    public List<String> getSelectedGenres() {
-        List<String> genres = new ArrayList<>();
-        if (comedyBox.isSelected()) genres.add("Comedy");
-        if (horrorBox.isSelected()) genres.add("Horror");
-        if (romanceBox.isSelected()) genres.add("Romance");
-        if (actionBox.isSelected()) genres.add("Action");
-        if (scifiBox.isSelected()) genres.add("Sci-Fi");
-        if (thrillerBox.isSelected()) genres.add("Thriller");
-        if (fantasyBox.isSelected()) genres.add("Fantasy");
-        if (dramaBox.isSelected()) genres.add("Drama");
-        return genres;
     }
 
     private Hashtable<Integer, JLabel> makeStarLabels() {
@@ -221,16 +170,28 @@ public class FilterPage extends JFrame {
     }
 
     private JPanel makeCheckboxBox(JCheckBox box) {
-        JPanel wrapper = new JPanel();
-        wrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         wrapper.setBackground(new Color(35, 35, 35));
-        wrapper.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, true)); // rounded border
+        wrapper.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, true));
         wrapper.setOpaque(true);
         box.setOpaque(false);
         box.setFocusPainted(false);
         box.setForeground(Color.WHITE);
         wrapper.add(box);
         return wrapper;
+    }
+
+    public List<String> getSelectedGenres() {
+        List<String> genres = new ArrayList<>();
+        if (comedyBox.isSelected()) genres.add("Comedy");
+        if (horrorBox.isSelected()) genres.add("Horror");
+        if (romanceBox.isSelected()) genres.add("Romance");
+        if (actionBox.isSelected()) genres.add("Action");
+        if (scifiBox.isSelected()) genres.add("Sci-Fi");
+        if (thrillerBox.isSelected()) genres.add("Thriller");
+        if (fantasyBox.isSelected()) genres.add("Fantasy");
+        if (dramaBox.isSelected()) genres.add("Drama");
+        return genres;
     }
 
     public static void main(String[] args) {

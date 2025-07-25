@@ -1,17 +1,17 @@
+// MovieGridPage.java (fixed)
 package PopcornPicks.gui;
 
+import PopcornPicks.db.MyJDBC;
 import PopcornPicks.model.Movie;
 
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MovieGridPage extends JFrame {
 
-    public MovieGridPage() {
+    public MovieGridPage(List<String> genres, int yearFrom, int yearTo, int minRating) {
         setTitle("Movie Results");
         setSize(1100, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -19,7 +19,6 @@ public class MovieGridPage extends JFrame {
         getContentPane().setBackground(new Color(20, 20, 20));
         setLayout(new BorderLayout());
 
-        // ---------- HEADER PANEL ----------
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(20, 20, 20));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
@@ -41,15 +40,13 @@ public class MovieGridPage extends JFrame {
         titleLabel.setFont(new Font("Georgia", Font.BOLD, 32));
         titleLabel.setForeground(new Color(247, 179, 64));
         headerPanel.add(titleLabel, BorderLayout.CENTER);
-
         add(headerPanel, BorderLayout.NORTH);
 
-        // ---------- GRID PANEL ----------
         JPanel gridPanel = new JPanel(new GridLayout(0, 4, 20, 20));
         gridPanel.setBackground(new Color(20, 20, 20));
         gridPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        List<Movie> movies = getMoviesFromDB();
+        List<Movie> movies = MyJDBC.getFilteredMovies(genres, yearFrom, yearTo, minRating);
         for (Movie movie : movies) {
             gridPanel.add(createMovieBox(movie));
         }
@@ -129,33 +126,5 @@ public class MovieGridPage extends JFrame {
         });
 
         return panel;
-    }
-
-    private List<Movie> getMoviesFromDB() {
-        List<Movie> movies = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/team2" +
-                "", "team2", "team2password");
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT title, genre, year, rating, synopsis, posterPath FROM Movies")) {
-
-            while (rs.next()) {
-                String title = rs.getString("title");
-                String genre = rs.getString("genre");
-                int year = rs.getInt("year");
-                float rating = rs.getFloat("rating");
-                String synopsis = rs.getString("synopsis");
-                String posterPath = rs.getString("posterPath");
-
-                movies.add(new Movie(title, genre, year, rating, synopsis, posterPath));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return movies;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(MovieGridPage::new);
     }
 }

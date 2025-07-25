@@ -1,5 +1,6 @@
 package PopcornPicks.gui;
 
+import PopcornPicks.db.MyJDBC;
 import PopcornPicks.model.Playlist;
 import PopcornPicks.model.Session;
 import PopcornPicks.model.User;
@@ -11,7 +12,7 @@ import java.util.List;
 public class PlaylistHomePage extends JFrame {
 
     public PlaylistHomePage() {
-        setTitle("Playlists");
+        setTitle("Your Playlists");
         setSize(1100, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -22,26 +23,22 @@ public class PlaylistHomePage extends JFrame {
         Color darkBG = new Color(20, 20, 20);
         Color light = Color.decode("#FEE6B6");
 
-        // header
+        // ---------- HEADER ----------
         JPanel topBar = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topBar.setBackground(new Color(20, 20, 20));
+        topBar.setBackground(darkBG);
 
-        // logo
         ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/popcorn.png"));
         Image logoImg = logoIcon.getImage().getScaledInstance(50, 60, Image.SCALE_SMOOTH);
         JButton logoButton = new JButton(new ImageIcon(logoImg));
-
         logoButton.setContentAreaFilled(false);
         logoButton.setBorderPainted(false);
         logoButton.setFocusPainted(false);
         logoButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
         logoButton.addActionListener(e -> {
             dispose();
             new StartWindow();
         });
 
-        // "Your Playlists" title
         JLabel titleLabel = new JLabel("Your Playlists");
         titleLabel.setFont(new Font("Georgia", Font.BOLD | Font.ITALIC, 48));
         titleLabel.setForeground(gold);
@@ -51,36 +48,54 @@ public class PlaylistHomePage extends JFrame {
         topBar.add(titleLabel);
         add(topBar, BorderLayout.NORTH);
 
-        // Main panel (vertical layout)
+        // ---------- MAIN PANEL ----------
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(darkBG);
 
-        // "New Playlist" button
-        // JLabel newPlaylist = new JLabel(\);
+        // "New Playlist" button (placeholder logic)
         JButton newPlaylistButton = makeStyledButton("➕ New Playlist");
         newPlaylistButton.addActionListener(e -> {
-            // Logic to open a create playlist window
-            System.out.println("Create New Playlist");
+            // You can open a dialog or create playlist logic here
+            JOptionPane.showMessageDialog(this, "Create Playlist functionality not implemented.");
         });
         newPlaylistButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainPanel.add(Box.createVerticalStrut(20));
         mainPanel.add(newPlaylistButton);
         mainPanel.add(Box.createVerticalStrut(30));
 
-        // Grid of saved playlists
-        JPanel gridPanel = new JPanel(new GridLayout(0, 2, 30, 30)); // 2 per row
+        // ---------- FETCH USER & PLAYLISTS ----------
+        User currentUser = Session.getUser();
+        if (currentUser == null) {
+            JOptionPane.showMessageDialog(this, "Error: no user session found.", "Session Error", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            new Login();
+            return;
+        }
+
+        int uid = currentUser.getUid();
+        List<Playlist> playlists = MyJDBC.getUserPlaylists(uid);
+        currentUser.setPlaylists(playlists);
+
+        // ---------- PLAYLIST GRID ----------
+        JPanel gridPanel = new JPanel(new GridLayout(0, 2, 30, 30)); // 2 columns
         gridPanel.setBackground(darkBG);
 
-        User currentUser = Session.getUser();
-        List<Playlist> playlists = currentUser.getPlaylists();
-
-        for (Playlist playlist : playlists) {
-            JButton playlistButton = makeStyledButton(playlist.getName());
-            playlistButton.addActionListener(e -> {
-                System.out.println("Open Playlist: " + playlist.getName());
-                new PlaylistPage(playlist);
-            });
-            gridPanel.add(playlistButton);
+        if (playlists.isEmpty()) {
+            JLabel emptyMsg = new JLabel("You don’t have any playlists yet.");
+            emptyMsg.setFont(new Font("SansSerif", Font.ITALIC, 18));
+            emptyMsg.setForeground(Color.LIGHT_GRAY);
+            emptyMsg.setAlignmentX(Component.CENTER_ALIGNMENT);
+            mainPanel.add(emptyMsg);
+        } else {
+            for (Playlist playlist : playlists) {
+                JButton playlistButton = makeStyledButton(playlist.getName());
+                playlistButton.addActionListener(e -> {
+                    dispose();
+                    new PlaylistPage(playlist);
+                });
+                gridPanel.add(playlistButton);
+            }
         }
 
         JPanel gridWrapper = new JPanel(new BorderLayout());
@@ -110,8 +125,6 @@ public class PlaylistHomePage extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() ->
-                new PlaylistHomePage()
-        );
+        SwingUtilities.invokeLater(PlaylistHomePage::new);
     }
 }

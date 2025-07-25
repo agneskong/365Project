@@ -1,5 +1,9 @@
 package PopcornPicks.gui;
 
+import PopcornPicks.db.MyJDBC;
+import PopcornPicks.model.User;
+import PopcornPicks.model.Session;
+
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
@@ -118,9 +122,14 @@ public class Login extends JFrame {
 
             // run DB check in background
             new Thread(() -> {
-                boolean valid = checkCredentials(user, pass);
+                boolean valid = MyJDBC.isValidLogin(user, pass);
+                int uid = MyJDBC.getUserId(user);
+
                 SwingUtilities.invokeLater(() -> {
-                    if (valid) {
+                    if (valid && uid != -1) {
+                        User loggedInUser = new User(uid, user, pass);  // pass is available at that point
+                        loggedInUser.setPlaylists(MyJDBC.getUserPlaylists(uid));
+                        Session.setUser(loggedInUser);
                         dispose();
                         new StartWindow();
                     } else {
@@ -144,30 +153,6 @@ public class Login extends JFrame {
 
         add(wrapper, BorderLayout.CENTER);
         setVisible(true);
-    }
-
-    private boolean checkCredentials(String username, String pwd) {
-        String url = "jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/team2?connectTimeout=5000";
-        String dbUser = "team2";            // replace with your DB username
-        String dbPass = "team2password";    // replace with your DB password
-
-        try (Connection connection = DriverManager.getConnection(url, dbUser, dbPass)) {
-            System.out.println("Database connection successful.");
-
-            String sql = "SELECT * FROM Users WHERE username=? AND pwd=?";
-            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, username);
-                stmt.setString(2, pwd);
-
-                ResultSet rs = stmt.executeQuery();
-                return rs.next(); // returns true if a match is found
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Failed to connect to database.");
-            e.printStackTrace();
-            return false;
-        }
     }
 
     public static void main(String[] args) {
