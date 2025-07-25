@@ -65,7 +65,7 @@ public class PlaylistHomePage extends JFrame {
         mainPanel.add(Box.createVerticalStrut(30));
 
         // ---------- FETCH USER & PLAYLISTS ----------
-        User currentUser = Session.getUser();
+        /*User currentUser = Session.getUser();
         if (currentUser == null) {
             JOptionPane.showMessageDialog(this, "Error: no user session found.", "Session Error", JOptionPane.ERROR_MESSAGE);
             dispose();
@@ -75,7 +75,14 @@ public class PlaylistHomePage extends JFrame {
 
         int uid = currentUser.getUid();
         List<Playlist> playlists = MyJDBC.getUserPlaylists(uid);
-        currentUser.setPlaylists(playlists);
+        currentUser.setPlaylists(playlists);*/
+        // Always use hardcoded demo playlists
+        java.util.List<Playlist> playlists = new java.util.ArrayList<>();
+        Playlist p1 = new Playlist(1, "Favorites");
+        Playlist p2 = new Playlist(2, "Watch Later");
+        Playlist p3 = new Playlist(3, "Comedies");
+        playlists.add(p1);
+        playlists.add(p2);
 
         // ---------- PLAYLIST GRID ----------
         JPanel gridPanel = new JPanel(new GridLayout(0, 2, 30, 30)); // 2 columns
@@ -92,7 +99,14 @@ public class PlaylistHomePage extends JFrame {
                 JButton playlistButton = makeStyledButton(playlist.getName());
                 playlistButton.addActionListener(e -> {
                     dispose();
-                    new PlaylistPage(playlist);
+                    //new PlaylistPage(playlist);
+                    // Always use hardcoded movies for demo
+                    Playlist demoPlaylist = new Playlist(playlist.getName().hashCode(), playlist.getName());
+                    demoPlaylist.getTitles().add("The Matrix");
+                    demoPlaylist.getTitles().add("Inception");
+                    demoPlaylist.getTitles().add("Arrival");
+                    demoPlaylist.getTitles().add("The Dark Knight");
+                    new PlaylistPage(demoPlaylist);
                 });
                 gridPanel.add(playlistButton);
             }
