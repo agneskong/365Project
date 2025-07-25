@@ -176,12 +176,6 @@ public class FilterPage extends JFrame {
         setVisible(true);
     }
 
-    private void styleLabel(JLabel label) {
-        label.setForeground(Color.LIGHT_GRAY);
-        label.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-    }
-
     private void styleTextField(JTextField field) {
         field.setFont(new Font("SansSerif", Font.PLAIN, 24));
         field.setBackground(new Color(30, 30, 30));
