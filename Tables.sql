@@ -24,6 +24,7 @@ create table if not exists Movies (
     title varchar(40) not null,
     date Date not null,
     mgid integer not null,
+    poster varchar(100) not null,
     synopsis varchar(100) not null,
     foreign key (mgid) references MovieGenres (mgid)
 );
