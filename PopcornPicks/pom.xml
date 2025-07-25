@@ -22,14 +22,13 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Optional: Add MySQL connector if needed -->
-    <!--
+
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <version>8.0.33</version>
     </dependency>
-    -->
+
   </dependencies>
 
   <build>

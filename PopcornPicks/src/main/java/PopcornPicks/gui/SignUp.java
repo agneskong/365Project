@@ -168,16 +168,17 @@ public class SignUp extends JFrame {
     }
 
     private boolean registerUser(String username, String password) {
-        String url = "jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/?user=team2";
+        String url = "jdbc:mysql://ambari-node5.csc.calpoly.edu:3306/team2";
         String dbUser = "team2";
         String dbPass = "team2password";
 
         try (Connection conn = DriverManager.getConnection(url, dbUser, dbPass);
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO Users (username, password) VALUES (?, ?)")) {
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO Users (username, pwd) VALUES (?, ?)")) {
 
             stmt.setString(1, username);
             stmt.setString(2, password);
             int rowsInserted = stmt.executeUpdate();
+            System.out.println("User was successfully registered!");
             return rowsInserted > 0;
 
         } catch (SQLException e) {
